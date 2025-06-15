@@ -795,41 +795,47 @@
             "Elevación de talones": "De pie, levanta los talones del suelo lo más alto posible, apoyándote solo en la punta de los pies. Mantén la posición un segundo y baja lentamente.",
         };
 
-        // Función para generar un mensaje motivacional (usa la API de Gemini)
-        document.getElementById('generateMotivation').addEventListener('click', async () => {
+        // Array para definir tus mensajes/consejos motivacionales
+        const motivationMessages = [
+            "¡Eh! Que a los 54 se está empezando la mejor época. Tu cuerpo va a flipar con lo que le viene encima.",
+            "Hoy toca hierro, ¡y no me refiero al de planchar! Aunque seguro que pesa menos que la cesta de la ropa.",
+            "Los funcionarios sabéis de constancia, ¿no? Pues aplícalo aquí y vas a ser una máquina.",
+            "¡Dale caña! Que en Hernani van a tener que hacer una estatua tuya cuando vean cómo te pones.",
+            "Cada repetición es un 'no me jodas' a la edad. ¡A demostrar quién manda aquí!",
+            "¿Sabes qué es mejor que la estabilidad laboral? La estabilidad muscular. ¡A por ella!",
+            "Tu cuerpo es como el BOE: al principio cuesta entenderlo, pero luego funciona de maravilla.",
+            "¡Que levanten la mano las que pueden con todo! Ah, espera, que estás levantando pesas.",
+            "A ver si va a resultar que el gym se convierte en tu nuevo despacho favorito.",
+            "Hoy el músculo, mañana el mundo. O al menos Hernani, que ya es bastante.",
+            "¿Agujetas? Eso son medallitas que te pone el cuerpo por trabajar bien duro.",
+            "Los papeles del trabajo pueden esperar, pero tus músculos están impacientes por crecer.",
+            "¡Dale que dale! Que la pesa no se va a levantar sola, aunque a veces lo parezca.",
+            "Eres más dura que una oposición, así que esto va a ser pan comido.",
+            "¡Fuerza y honor! Bueno, fuerza sobre todo, que el honor ya lo tienes de sobra.",
+            "Tu yo de hace un mes estaría alucinando viendo lo que haces ahora. ¡Sigue así!",
+            "Que sepan en toda Gipuzkoa que aquí hay una que no se rinde ni harta de txakoli.",
+            "Las mancuernas son como los expedientes: al principio pesan, pero luego coges el truco.",
+            "¡A muerte con el hierro! Que luego presumes en la cuadrilla de lo fuerte que estás.",
+            "Cada día que entrenas es un día que le plantas cara al sofá. ¡Bien por ti!",
+            "Los músculos son como los amigos: cuanto más los cuidas, mejor te tratan.",
+            "¡Que tiemble el suelo de Hernani! Bueno, igual no tanto, pero que se note que pasas.",
+            "Tu fuerza de voluntad es más sólida que las instituciones vascas. ¡Y eso es decir mucho!",
+            "¿Cansada? ¡Qué va! Estás recargando energía como un móvil que se ha quedado sin batería.",
+            "Hoy toca ser la protagonista de tu propia película de acción. ¡Cámara y acción!",
+            "Las excusas están prohibidas, pero los descansos entre series están más que permitidos.",
+            "¡Venga, que el fin de semana te espera y vas a llegar hecha una campeona!",
+            "Tu constancia es más fiable que el transporte público. ¡Y eso ya es un cumplido!",
+            "Cada gota de sudor es una inversión en tu yo futuro. ¡Menudo negociazo!",
+            "¡Ale hop! Que terminas esta serie y ya eres oficialmente más fuerte que ayer. ¡Toma ya!"
+        ];
+
+        // Función para generar un mensaje motivacional (ahora de una lista predefinida)
+        document.getElementById('generateMotivation').addEventListener('click', () => {
             const outputDiv = document.getElementById('motivationOutput');
-            outputDiv.innerHTML = 'Cargando...'; // Loading indicator
-
-            let chatHistory = [];
-            const prompt = "Genera un consejo de fitness corto y motivador para alguien que está empezando un plan de entrenamiento de fuerza y agilidad. Enfócate en mantener la motivación y la consistencia. Extiéndete un poco en la explicación del consejo.";
-            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-            const payload = { contents: chatHistory };
-
-            // The apiKey will be provided by the Canvas environment automatically.
-            const apiKey = "";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    outputDiv.textContent = text; // Display the response
-                } else {
-                    outputDiv.textContent = 'Lo siento, no pude generar un mensaje. Intenta de nuevo.';
-                    console.error('Unexpected API response structure:', result);
-                }
-            } catch (error) {
-                outputDiv.textContent = 'Error al conectar con el servidor. Intenta de nuevo más tarde.';
-                console.error('Error fetching motivation:', error);
-            }
+            // Selecciona un mensaje aleatorio del array
+            const randomIndex = Math.floor(Math.random() * motivationMessages.length);
+            outputDiv.textContent = motivationMessages[randomIndex];
+            // No se añade 'Generado por IA' ya que ahora son mensajes predefinidos
         });
 
         // Función para manejar los detalles de los ejercicios (usa descripciones predefinidas)
@@ -845,38 +851,9 @@
                 if (exerciseDescriptions[exerciseName]) {
                     modalDescription.textContent = exerciseDescriptions[exerciseName];
                 } else {
-                    // Fallback a la llamada LLM si no hay descripción predefinida
-                    modalDescription.textContent = 'Cargando detalles del ejercicio (generado por IA)...';
-
-                    let chatHistory = [];
-                    const prompt = `Proporciona una descripción clara y concisa del ejercicio "${exerciseName}" para alguien que es principiante en fitness. Incluye cómo realizarlo correctamente, los músculos principales que trabaja y un consejo clave para evitar errores comunes.`;
-                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-                    const payload = { contents: chatHistory };
-
-                    const apiKey = ""; // API key is handled by the environment
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                    try {
-                        const response = await fetch(apiUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        });
-
-                        const result = await response.json();
-                        if (result.candidates && result.candidates.length > 0 &&
-                            result.candidates[0].content && result.candidates[0].content.parts &&
-                            result.candidates[0].content.parts.length > 0) {
-                            const text = result.candidates[0].content.parts[0].text;
-                            modalDescription.textContent = text;
-                        } else {
-                            modalDescription.textContent = 'Lo siento, no pude cargar la descripción de este ejercicio. Intenta de nuevo.';
-                            console.error('Unexpected API response structure:', result);
-                        }
-                    } catch (error) {
-                        modalDescription.textContent = 'Error al conectar con el servidor para la descripción del ejercicio. Intenta de nuevo más tarde.';
-                        console.error('Error fetching exercise details:', error);
-                    }
+                    // Fallback si no hay descripción predefinida (aunque ahora tenemos todas)
+                    modalDescription.textContent = 'Lo siento, no hay una descripción disponible para este ejercicio.';
+                    console.warn(`No hay descripción predefinida para el ejercicio: ${exerciseName}.`);
                 }
                 modal.style.display = 'flex'; // Show modal
             });
